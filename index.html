@@ -1,0 +1,222 @@
+e2
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chess Studio</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <script src="script.js" defer></script>
+</head>
+<body data-theme="classic" data-layout="pc">
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">PLAY • THINK • IMPROVE</p>
+        <h1>Chess Studio</h1>
+        <p class="subtitle">나만의 테마로 즐기는 체스</p>
+      </div>
+      <div class="top-controls">
+        <label class="control-label" for="themeSelect">
+          테마
+          <select id="themeSelect">
+            <option value="classic">Classic</option>
+            <option value="wood">Wood</option>
+            <option value="marble">Marble</option>
+            <option value="glass">Glass</option>
+            <option value="neon">Neon</option>
+          </select>
+        </label>
+        <label class="control-label" for="timeSelect">
+          시간 제한
+          <select id="timeSelect">
+            <option value="1">1분</option>
+            <option value="3">3분</option>
+            <option value="5" selected>5분</option>
+            <option value="10">10분</option>
+            <option value="15">15분</option>
+            <option value="30">30분</option>
+          </select>
+        </label>
+        <label class="control-label" for="layoutSelect">
+          화면 모드
+          <select id="layoutSelect">
+            <option value="pc" selected>PC 버전</option>
+            <option value="mobile">폰 버전</option>
+          </select>
+        </label>
+      </div>
+    </header>
+
+    <section class="settings-card">
+      <label class="control-label" for="modeSelect">
+        게임 모드
+        <select id="modeSelect">
+          <option value="bot" selected>사람 대 봇</option>
+          <option value="local">사람 대 사람</option>
+        </select>
+      </label>
+      <label class="control-label" for="humanColorSelect">
+        내 기물
+        <select id="humanColorSelect">
+          <option value="w" selected>백 (먼저 시작)</option>
+          <option value="b">흑</option>
+        </select>
+      </label>
+      <label class="control-label" for="difficultySelect">
+        봇 난이도
+        <select id="difficultySelect">
+          <option value="easy">쉬움</option>
+          <option value="medium" selected>보통</option>
+          <option value="hard">어려움</option>
+        </select>
+      </label>
+      <p id="modeHint" class="settings-hint">백으로 봇과 대전합니다. 봇이 흑을 맡습니다.</p>
+    </section>
+
+    <section class="game-layout">
+      <section class="board-panel" aria-label="체스 게임">
+        <div class="player-strip black-strip">
+          <div class="player-ident">
+            <span class="player-dot black-dot"></span>
+            <div>
+              <strong id="blackPlayerName">흑 (Black)</strong>
+              <small id="blackPlayerRole">봇 플레이어</small>
+            </div>
+          </div>
+          <div id="blackScore" class="score-pill">0점</div>
+          <div id="blackClock" class="clock">05:00</div>
+        </div>
+
+        <div class="board-frame">
+          <div class="board-coordinates files-top" aria-hidden="true">
+            <span>a</span><span>b</span><span>c</span><span>d</span>
+            <span>e</span><span>f</span><span>g</span><span>h</span>
+          </div>
+
+          <div class="board-row-wrap">
+            <div class="board-coordinates ranks-left" aria-hidden="true">
+              <span>8</span><span>7</span><span>6</span><span>5</span>
+              <span>4</span><span>3</span><span>2</span><span>1</span>
+            </div>
+
+            <div class="board-stage">
+              <div id="board" class="board" role="group" aria-label="체스판"></div>
+
+              <div id="startOverlay" class="start-overlay" aria-label="게임 시작 대기">
+                <div class="start-overlay-card">
+                  <p class="eyebrow">READY TO PLAY?</p>
+                  <h2>대국 준비 완료</h2>
+                  <p>시작 버튼을 누르면 체스와 타이머가 함께 시작됩니다.</p>
+                  <button id="startGameButton" class="button button-primary start-game-button" type="button">
+                    게임 시작
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="board-coordinates ranks-right" aria-hidden="true">
+              <span>8</span><span>7</span><span>6</span><span>5</span>
+              <span>4</span><span>3</span><span>2</span><span>1</span>
+            </div>
+          </div>
+
+          <div class="board-coordinates files-bottom" aria-hidden="true">
+            <span>a</span><span>b</span><span>c</span><span>d</span>
+            <span>e</span><span>f</span><span>g</span><span>h</span>
+          </div>
+        </div>
+
+        <div class="player-strip white-strip">
+          <div class="player-ident">
+            <span class="player-dot white-dot"></span>
+            <div>
+              <strong id="whitePlayerName">백 (White)</strong>
+              <small id="whitePlayerRole">내 플레이어</small>
+            </div>
+          </div>
+          <div id="whiteScore" class="score-pill">0점</div>
+          <div id="whiteClock" class="clock active-clock">05:00</div>
+        </div>
+
+        <div class="status-card">
+          <div class="status-indicator"></div>
+          <div>
+            <strong id="status">백 차례</strong>
+            <p id="statusDetail">기물을 선택한 다음 이동할 칸을 선택하세요.</p>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button id="newGame" class="button button-primary" type="button">새 게임</button>
+          <button id="undoMove" class="button" type="button" disabled>한 수 무르기</button>
+          <button id="flipBoard" class="button" type="button">보드 뒤집기</button>
+          <button id="resignGame" class="button button-danger" type="button">기권</button>
+          <button id="drawOffer" class="button" type="button">무승부 제안</button>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <section class="info-card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">GAME LOG</p>
+              <h2>이동 기록</h2>
+            </div>
+            <span class="heading-icon">↗</span>
+          </div>
+          <div class="move-list-header">
+            <span>수</span><span>백</span><span>흑</span>
+          </div>
+          <div id="moveList" class="move-list">
+            <p class="empty-state">아직 이동 기록이 없습니다.</p>
+          </div>
+        </section>
+
+        <section class="info-card guide-card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">QUICK GUIDE</p>
+              <h2>기물 포획 점수</h2>
+            </div>
+          </div>
+          <div class="piece-values">
+            <div><span>♙</span><span>폰</span><strong>1점</strong></div>
+            <div><span>♘</span><span>나이트</span><strong>3점</strong></div>
+            <div><span>♗</span><span>비숍</span><strong>3점</strong></div>
+            <div><span>♖</span><span>룩</span><strong>5점</strong></div>
+            <div><span>♕</span><span>퀸</span><strong>9점</strong></div>
+            <div><span>♔</span><span>킹</span><strong>0점</strong></div>
+          </div>
+          <p class="hint">
+            점수는 상대 기물을 잡았을 때 획득합니다.
+            게임 시작 시 양쪽 모두 0점이며, 무르기를 하면 점수도 복구됩니다.
+          </p>
+        </section>
+        <p class="footer-note">Chess Studio <span>·</span> 사람 대 봇 / 로컬 2인용</p>
+      </aside>
+    </section>
+  </main>
+
+  <div id="resultModal" class="result-overlay hidden"
+       role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+    <div class="result-card">
+      <p class="eyebrow">GAME OVER</p>
+      <h2 id="resultTitle">백 승리!</h2>
+      <p id="resultDetail">체크메이트</p>
+      <button id="resultNewGame" class="button button-primary" type="button">새 게임 시작</button>
+    </div>
+  </div>
+
+  <div id="promotionModal" class="modal hidden"
+       role="dialog" aria-modal="true" aria-labelledby="promotionTitle">
+    <div class="modal-card">
+      <p class="eyebrow">PROMOTION</p>
+      <h2 id="promotionTitle">폰 승격</h2>
+      <p>승격할 기물을 선택하세요.</p>
+      <div id="promotionOptions" class="promotion-options"></div>
+    </div>
+  </div>
+</body>
+</html>
